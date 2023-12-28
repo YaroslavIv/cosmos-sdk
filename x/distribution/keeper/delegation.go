@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"fmt"
-
+	"math/big"
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -50,6 +50,9 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx sdk.Context, val stakingty
 		panic("negative rewards should not be possible")
 	}
 	// note: necessary to truncate so we don't allow withdrawing more rewards than owed
+	x := stake.BigInt()
+	b := new(big.Int).Div(x, big.NewInt(2000000000000000000))
+	stake = math.LegacyNewDecFromBigInt(b)
 	rewards = difference.MulDecTruncate(stake)
 	return
 }
