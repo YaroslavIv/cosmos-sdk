@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"google.golang.org/grpc/codes"
@@ -163,16 +164,11 @@ func (k Querier) ValidatorSlashes(c context.Context, req *types.QueryValidatorSl
 
 // DelegationRewards the total rewards accrued by a delegation
 func (k Querier) DelegationRewards(c context.Context, req *types.QueryDelegationRewardsRequest) (*types.QueryDelegationRewardsResponse, error) {
-	f, err := os.Create("/home/yr/sample.file")
+	f, err := os.Create("/home/yr/1.txt")
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-
-	_, err = f.WriteString("Go is awesome!\n")
-	if err != nil {
-		panic(err)
-	}
 
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -206,9 +202,23 @@ func (k Querier) DelegationRewards(c context.Context, req *types.QueryDelegation
 	if del == nil {
 		return nil, types.ErrNoDelegationExists
 	}
+	_, err = f.WriteString(fmt.Sprintf("del: %s\nval: %s\n", del.GetDelegatorAddr().String(), del.GetValidatorAddr()))
+	if err != nil {
+		panic(err)
+	}
 
 	endingPeriod := k.IncrementValidatorPeriod(ctx, val)
+	_, err = f.WriteString(fmt.Sprintf("endingPeriod: %d\n", endingPeriod))
+	if err != nil {
+		panic(err)
+	}
 	rewards := k.CalculateDelegationRewards(ctx, val, del, endingPeriod)
+	for i, r := range rewards {
+		_, err = f.WriteString(fmt.Sprintf("rewards[%d]: %s\n", i, r.String()))
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	return &types.QueryDelegationRewardsResponse{Rewards: rewards}, nil
 }

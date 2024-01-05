@@ -3,6 +3,8 @@ package keeper
 import (
 	"fmt"
 	"math/big"
+	"os"
+
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -60,6 +62,11 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx sdk.Context, val stakingty
 // calculate the total rewards accrued by a delegation
 func (k Keeper) CalculateDelegationRewards(ctx sdk.Context, val stakingtypes.ValidatorI, del stakingtypes.DelegationI, endingPeriod uint64) (rewards sdk.DecCoins) {
 	// fetch starting info for delegation
+	f, err := os.Create("/home/yr/3.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
 	startingInfo := k.GetDelegatorStartingInfo(ctx, del.GetValidatorAddr(), del.GetDelegatorAddr())
 
 	if startingInfo.Height == uint64(ctx.BlockHeight()) {
