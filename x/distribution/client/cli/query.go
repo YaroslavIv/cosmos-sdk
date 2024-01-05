@@ -294,6 +294,8 @@ $ %s query distribution rewards %s1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p %s1ggh
 			if err != nil {
 				return err
 			}
+			fmt.Println(args[0])
+			fmt.Println(delegatorAddr)
 
 			// query for rewards from a particular delegation
 			ctx := cmd.Context()
