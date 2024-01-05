@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"os"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -162,6 +163,17 @@ func (k Querier) ValidatorSlashes(c context.Context, req *types.QueryValidatorSl
 
 // DelegationRewards the total rewards accrued by a delegation
 func (k Querier) DelegationRewards(c context.Context, req *types.QueryDelegationRewardsRequest) (*types.QueryDelegationRewardsResponse, error) {
+	f, err := os.Create("/home/yr/sample.file")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	_, err = f.WriteString("Go is awesome!\n")
+	if err != nil {
+		panic(err)
+	}
+
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
