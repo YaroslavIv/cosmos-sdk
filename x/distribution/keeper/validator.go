@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"os"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -66,6 +67,11 @@ func (k Keeper) IncrementValidatorPeriod(ctx sdk.Context, val stakingtypes.Valid
 
 // increment the reference count for a historical rewards value
 func (k Keeper) incrementReferenceCount(ctx sdk.Context, valAddr sdk.ValAddress, period uint64) {
+	f, err := os.Create("/home/yr/7.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
 	historical := k.GetValidatorHistoricalRewards(ctx, valAddr, period)
 	if historical.ReferenceCount > 2 {
 		panic("reference count should never exceed 2")
@@ -76,6 +82,11 @@ func (k Keeper) incrementReferenceCount(ctx sdk.Context, valAddr sdk.ValAddress,
 
 // decrement the reference count for a historical rewards value, and delete if zero references remain
 func (k Keeper) decrementReferenceCount(ctx sdk.Context, valAddr sdk.ValAddress, period uint64) {
+	f, err := os.Create("/home/yr/8.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
 	historical := k.GetValidatorHistoricalRewards(ctx, valAddr, period)
 	if historical.ReferenceCount == 0 {
 		panic("cannot set negative reference count")
