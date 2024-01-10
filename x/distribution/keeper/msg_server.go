@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"os"
 
 	"github.com/armon/go-metrics"
 
@@ -45,12 +44,6 @@ func (k msgServer) SetWithdrawAddress(goCtx context.Context, msg *types.MsgSetWi
 }
 
 func (k msgServer) WithdrawDelegatorReward(goCtx context.Context, msg *types.MsgWithdrawDelegatorReward) (*types.MsgWithdrawDelegatorRewardResponse, error) {
-	f, err := os.Create("/home/yr/6.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	valAddr, err := sdk.ValAddressFromBech32(msg.ValidatorAddress)

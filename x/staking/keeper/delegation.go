@@ -3,7 +3,6 @@ package keeper
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"time"
 
 	"cosmossdk.io/math"
@@ -14,12 +13,6 @@ import (
 
 // GetDelegation returns a specific delegation.
 func (k Keeper) GetDelegation(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (delegation types.Delegation, found bool) {
-	f, err := os.Create("/home/yr/2.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
 	store := ctx.KVStore(k.storeKey)
 	key := types.GetDelegationKey(delAddr, valAddr)
 

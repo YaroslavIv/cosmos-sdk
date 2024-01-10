@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/cometbft/cometbft/libs/log"
 
@@ -82,12 +81,6 @@ func (k Keeper) SetWithdrawAddr(ctx sdk.Context, delegatorAddr sdk.AccAddress, w
 
 // withdraw rewards from a delegation
 func (k Keeper) WithdrawDelegationRewards(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, error) {
-	f, err := os.Create("/home/yr/5.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
 	val := k.stakingKeeper.Validator(ctx, valAddr)
 	if val == nil {
 		return nil, types.ErrNoValidatorDistInfo
