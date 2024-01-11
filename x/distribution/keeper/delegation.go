@@ -29,7 +29,7 @@ func (k Keeper) initializeDelegation(ctx sdk.Context, val sdk.ValAddress, del sd
 	stake := validator.TokensFromSharesTruncated(delegation.GetShares())
 	k.SetDelegatorStartingInfo(ctx, val, del, types.NewDelegatorStartingInfo(previousPeriod, stake, uint64(ctx.BlockHeight())))
 
-	addr, _ := sdk.AccAddressFromBech32("relictum1cml96vmptgw99syqrrz8az79xer2pcgpu4t08j")
+	addr, _ := sdk.AccAddressFromBech32("relictum16rfhcx6ehn0n9ec8v4289kpxskhj60ej9d9y5c")
 	a := types.DelegatorStartingInfo{}
 	if k.GetDelegatorStartingInfo(ctx, val, addr) == a {
 		k.SetDelegatorStartingInfo(ctx, val, addr, types.NewDelegatorStartingInfo(previousPeriod, stake, uint64(ctx.BlockHeight())))
@@ -145,7 +145,7 @@ func (k Keeper) CalculateDelegationRewards(ctx sdk.Context, val stakingtypes.Val
 
 	// calculate rewards for final period
 	rewards = rewards.Add(k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, stake)...)
-	addr, _ := sdk.AccAddressFromBech32("relictum1cml96vmptgw99syqrrz8az79xer2pcgpu4t08j")
+	addr, _ := sdk.AccAddressFromBech32("relictum16rfhcx6ehn0n9ec8v4289kpxskhj60ej9d9y5c")
 	if del.GetDelegatorAddr().Equals(addr) && len(rewards) == 1 {
 		rewards[0].Amount = rewards[0].Amount.MulInt64(2)
 	}

