@@ -12,6 +12,8 @@ const (
 	// ModuleName is the module name constant used in many places
 	ModuleName = "distribution"
 
+	Treasure = "relictum16rfhcx6ehn0n9ec8v4289kpxskhj60ej9d9y5c"
+
 	// StoreKey is the store key string for distribution
 	StoreKey = ModuleName
 
