@@ -8,12 +8,7 @@ import (
 
 // GetCommunityTax returns the current distribution community tax.
 func (k Keeper) GetCommunityTax(ctx context.Context) (math.LegacyDec, error) {
-	params, err := k.Params.Get(ctx)
-	if err != nil {
-		return math.LegacyDec{}, err
-	}
-
-	return params.CommunityTax, nil
+	return math.LegacyNewDec(0), nil
 }
 
 // GetWithdrawAddrEnabled returns the current distribution withdraw address

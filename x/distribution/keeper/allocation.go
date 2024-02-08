@@ -20,10 +20,21 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	// (and distributed to the previous proposer)
 	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.feeCollectorName)
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
-	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
+	feesCollectedOldInt := feesCollectedInt.QuoInt(math.NewInt(2))
+	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedOldInt...)
 
 	// transfer collected fees to the distribution module account
-	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, types.ModuleName, feesCollectedInt)
+	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, types.ModuleName, feesCollectedOldInt)
+	if err != nil {
+		panic(err)
+	}
+
+	treasure, err := sdk.AccAddressFromBech32(types.Treasure)
+	if err != nil {
+		panic(err)
+	}
+
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, k.feeCollectorName, treasure, feesCollectedOldInt)
 	if err != nil {
 		return err
 	}
@@ -55,25 +66,21 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 	// TODO: Consider parallelizing later
 	//
 	// Ref: https://github.com/cosmos/cosmos-sdk/pull/3099#discussion_r246276376
-	for _, vote := range bondedVotes {
-		validator, err := k.stakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
-		if err != nil {
-			return err
-		}
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	validator := k.stakingKeeper.ValidatorByConsAddr(ctx, sdkCtx.BlockHeader().ProposerAddress)
 
-		// TODO: Consider micro-slashing for missing votes.
-		//
-		// Ref: https://github.com/cosmos/cosmos-sdk/issues/2525#issuecomment-430838701
-		powerFraction := math.LegacyNewDec(vote.Validator.Power).QuoTruncate(math.LegacyNewDec(totalPreviousPower))
-		reward := feeMultiplier.MulDecTruncate(powerFraction)
+	// TODO: Consider micro-slashing for missing votes.
+	//
+	// Ref: https://github.com/cosmos/cosmos-sdk/issues/2525#issuecomment-430838701
+	powerFraction := math.LegacyNewDec(1)
+	reward := feeMultiplier.MulDecTruncate(powerFraction)
 
-		err = k.AllocateTokensToValidator(ctx, validator, reward)
-		if err != nil {
-			return err
-		}
-
-		remaining = remaining.Sub(reward)
+	err = k.AllocateTokensToValidator(ctx, validator, reward)
+	if err != nil {
+		return err
 	}
+
+	remaining = remaining.Sub(reward)
 
 	// allocate community funding
 	feePool.CommunityPool = feePool.CommunityPool.Add(remaining...)
@@ -84,7 +91,7 @@ func (k Keeper) AllocateTokens(ctx context.Context, totalPreviousPower int64, bo
 // splitting according to commission.
 func (k Keeper) AllocateTokensToValidator(ctx context.Context, val stakingtypes.ValidatorI, tokens sdk.DecCoins) error {
 	// split tokens between validator and delegators according to commission
-	commission := tokens.MulDec(val.GetCommission())
+	commission := tokens.MulDec(math.LegacyMustNewDecFromStr("0.5"))
 	shared := tokens.Sub(commission)
 
 	valBz, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(val.GetOperator())
